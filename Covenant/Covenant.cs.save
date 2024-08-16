@@ -1,4 +1,4 @@
-// Author: Ryan Cobb (@cobbr_io)
+﻿// Author: Ryan Cobb (@cobbr_io)
 // Project: Covenant (https://github.com/cobbr/Covenant)
 // License: GNU GPLv3
 
@@ -81,7 +81,7 @@ namespace Covenant
                     Console.WriteLine();
                 }
 
-                string CovenantBindUrl = ComputerNameOption.HasValue() ? ComputerNameOption.Value() : Environment.GetEnvironmentVariable("COVENANT_COMPUTER_NAME");
+                string CovenantBindUrl = ComputerNameOption.HasValue() ? ComputerNameOption.Value() : Environment.GetEnvironmentVariable("COVENANT_COMPUTER_NAME"); ;
                 if (string.IsNullOrEmpty(CovenantBindUrl))
                 {
                     CovenantBindUrl = "0.0.0.0";
@@ -103,14 +103,8 @@ namespace Covenant
                 {
                     address = Dns.GetHostAddresses(CovenantBindUrl).FirstOrDefault();
                 }
-
-                // Use the URL provided by Render if binding to "0.0.0.0"
-                string renderUrl = Environment.GetEnvironmentVariable("RENDER_EXTERNAL_URL");
-                string CovenantUri = CovenantBindUrl == "0.0.0.0" && !string.IsNullOrEmpty(renderUrl)
-                    ? $"https://{renderUrl}:{CovenantPort}"
-                    : $"https://{CovenantEndpoint}";
-
                 IPEndPoint CovenantEndpoint = new IPEndPoint(address, CovenantPort);
+                string CovenantUri = CovenantBindUrl == "0.0.0.0" ? "https://127.0.0.1:" + CovenantPort : "https://" + CovenantEndpoint;
                 var host = BuildHost(CovenantEndpoint, CovenantUri);
                 using (var scope = host.Services.CreateScope())
                 {
@@ -217,8 +211,7 @@ namespace Covenant
                             {
                                 Console.Error.WriteLine("Error importing Covenant certificate.");
                             }
-                            httpsOptions.SslProtocols = SslProtocols.Tls12;
-                        });
+                            httpsOptions.SslProtocols = SslProtocols.Tls12                        });
                     });
                     // options.Limits.MaxRequestBodySize = int.MaxValue;
                 })
